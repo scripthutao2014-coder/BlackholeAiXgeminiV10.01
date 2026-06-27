@@ -1,0 +1,47 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // 1. Global safety net catch-all: default deny
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Helper functions for hardened ABAC rules
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    // Validation helper for Message entity
+    function isValidMessage(msg) {
+      return msg.keys().hasAll(['sender', 'text', 'timestamp'])
+        && msg.keys().size() == 3
+        && msg.sender is string
+        && (msg.sender == 'user' || msg.sender == 'ai')
+        && msg.text is string
+        && msg.text.size() <= 50000
+        && msg.timestamp is int;
+    }
+
+    // 2. Chat sessions and messages security boundaries
+    match /ibt_chats/{chatId} {
+      allow get, list: if true; // Public access for demo sandbox compatibility
+      
+      match /messages/{messageId} {
+        allow read: if true; // Publicly readable for active demo synchronization
+        allow create: if isValidId(chatId) 
+          && isValidId(messageId)
+          && isValidMessage(incoming());
+        allow update, delete: if false; // Messages are immutable once sent!
+      }
+    }
+  }
+}

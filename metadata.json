@@ -1,0 +1,6 @@
+{
+  "name": "BlackholeAi X Gemini",
+  "description": "A premium dark-themed AI QA chat application named BlackholeAi X Gemini (IBT X Gem), powered by Google Gemini and integrated with Firebase for real-time chat history synchronization.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

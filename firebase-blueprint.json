@@ -1,0 +1,32 @@
+{
+  "entities": {
+    "Message": {
+      "title": "Message",
+      "description": "A single real-time conversation message entry",
+      "type": "object",
+      "properties": {
+        "sender": {
+          "type": "string",
+          "enum": ["user", "ai"],
+          "description": "The sender identity"
+        },
+        "text": {
+          "type": "string",
+          "description": "The markdown or raw text body of the message"
+        },
+        "timestamp": {
+          "type": "integer",
+          "format": "utc-timestamp",
+          "description": "Timestamp indicating when the message was sent"
+        }
+      },
+      "required": ["sender", "text", "timestamp"]
+    }
+  },
+  "firestore": {
+    "/ibt_chats/{chatId}/messages/{messageId}": {
+      "schema": "Message",
+      "description": "Sub-collection containing all real-time chat messages under a specific wormhole session"
+    }
+  }
+}
